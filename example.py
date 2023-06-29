@@ -3,7 +3,7 @@ import wrapper
 API_KEY = ""
 BASE_URL = "http://localhost:8000/api"
 
-def main(self, product_data):
+def main():
     """
     This example call to get list products
     :param kwargs:
@@ -20,5 +20,7 @@ def main(self, product_data):
     # Print resp after convert to dictionary
     print(resp)
 
+if __name__ == "__main__":
+    main()
 
 
