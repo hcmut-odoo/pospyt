@@ -1,4 +1,4 @@
-import wrapper
+import pospyt
 from pprint import pprint
 
 API_KEY = ""
@@ -10,8 +10,8 @@ def main():
     """
 
     # Init pos
-    pos = wrapper.PosWebServiceDict(BASE_URL, API_KEY)
-    client = wrapper.PosWebservice(BASE_URL, API_KEY)
+    pos = pospyt.PosWebServiceDict(BASE_URL, API_KEY)
+    client = pospyt.PosWebservice(BASE_URL, API_KEY)
     # Usecase 1: pass resource as argument
     pprint(pos.search('user/list'))
 
