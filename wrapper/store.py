@@ -8,7 +8,7 @@ class Store(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("store/create", "POST", store_data)
+        return self.client._execute("store/create", "POST", store_data)
     
     def read(self, **kwargs):
         """
@@ -16,7 +16,7 @@ class Store(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("store/read", "GET", kwargs)
+        return self.client._execute("store/read", "GET", kwargs)
     
     def delete(self, **kwargs):
         """
@@ -24,7 +24,7 @@ class Store(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("store/delete", "POST", kwargs)
+        return self.client._execute("store/delete", "POST", kwargs)
 
     def update(self, **kwargs):
         """
@@ -32,7 +32,7 @@ class Store(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("store/update", "PUT", kwargs)
+        return self.client._execute("store/update", "PUT", kwargs)
     
     def list(self, **kwargs):
         """
@@ -40,4 +40,4 @@ class Store(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("store/list", "GET", kwargs)
+        return self.client._execute("store/list", "GET", kwargs)

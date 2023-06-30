@@ -8,7 +8,7 @@ class Invoice(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("invoice/create", "POST", invoice_data)
+        return self.client._execute("invoice/create", "POST", invoice_data)
     
     def read(self, **kwargs):
         """
@@ -16,7 +16,7 @@ class Invoice(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("invoice/read", "GET", kwargs)
+        return self.client._execute("invoice/read", "GET", kwargs)
     
     def delete(self, **kwargs):
         """
@@ -24,7 +24,7 @@ class Invoice(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("invoice/delete", "POST", kwargs)
+        return self.client._execute("invoice/delete", "POST", kwargs)
 
     def update(self, **kwargs):
         """
@@ -32,7 +32,7 @@ class Invoice(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("invoice/update", "PUT", kwargs)
+        return self.client._execute("invoice/update", "PUT", kwargs)
     
     def list(self, **kwargs):
         """
@@ -40,4 +40,4 @@ class Invoice(BaseModule):
         :param kwargs:
         :return:
         """
-        return self.client.execute("invoice/list", "GET", kwargs)
+        return self.client._execute("invoice/list", "GET", kwargs)
