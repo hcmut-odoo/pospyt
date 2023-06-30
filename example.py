@@ -1,24 +1,24 @@
 import wrapper
+from pprint import pprint
 
 API_KEY = ""
 BASE_URL = "http://localhost:8000/api"
 
 def main():
     """
-    This example call to get list products
-    :param kwargs:
-    :return:
+    This example call to use wrapper
     """
 
-    # Init client
-    client = wrapper.Client(API_KEY, BASE_URL)
+    # Init pos
+    pos = wrapper.PosWebServiceDict(BASE_URL, API_KEY)
+    client = wrapper.PosWebservice(BASE_URL, API_KEY)
+    # Usecase 1: pass resource as argument
+    pprint(pos.search('user/list'))
 
-    # Call an api
-    # resp is an object of dictionary type
-    resp = client.product.list(per_page=5, page=1)
+    pprint("=========================================")
 
-    # Print resp after convert to dictionary
-    print(resp)
+    # Usecase 2: using traditional
+    pprint(client.user.list())
 
 if __name__ == "__main__":
     main()
