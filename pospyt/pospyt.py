@@ -136,6 +136,8 @@ class PosWebservice(object, metaclass=ClientMeta):
         if data:
             if request.method in ["POST", "PUT", "PATCH"]:
                 request.json = data
+            elif isinstance(data, dict):
+                request.json = data
             else:
                 request.params = data
         
@@ -241,7 +243,8 @@ class PosWebservice(object, metaclass=ClientMeta):
     def _build_response(self, method, resp):
         """
         Decoding JSON - Decode JSON string to Python object
-        JSONDecodeError can happen when requests have an HTTP error code like 404 and try to parse the response as JSON
+        JSONDecodeError can happen when requests have an HTTP error code 
+        like 404 and try to parse the response as JSON
         """
 
         if method == "HEAD":
@@ -272,7 +275,7 @@ class PosWebservice(object, metaclass=ClientMeta):
                 'Parameters must be a instance of dict'
             )
         supported = (
-            'filter', 'display', 'sort', 'limit', 'schema', 'date'
+            'filter', 'display', 'sort', 'date', 'limit', 'page'
         )
 
         unsupported = set([
@@ -286,6 +289,12 @@ class PosWebservice(object, metaclass=ClientMeta):
             )
         return True
     
+    def _make_default_option():
+        return {
+                'limit': 10,
+                'page': 1
+            }
+
     def _execute(self, uri, method, data=None, add_headers=None):
         """Execute a request on the PrestaShop Webservice.
 
@@ -297,6 +306,9 @@ class PosWebservice(object, metaclass=ClientMeta):
         :return: tuple with (status code, header, content) of the response.
         """
         parameter = self._make_default_parameter()
+
+        if data is None:
+            data = self._make_default_option()
 
         if data.get("timeout"):
             timeout = data.get("timeout")
@@ -372,7 +384,7 @@ class PosWebservice(object, metaclass=ClientMeta):
         """
         return mimetypes.guess_type(filename)[0] or 'application/octet-stream'
     
-    def search(self, resource, options={}):
+    def search(self, resource, options=None):
         """Retrieve (GET) a resource and return the json with the ids.
 
         This method is only a mapper to the get method
@@ -382,18 +394,18 @@ class PosWebservice(object, metaclass=ClientMeta):
         :param resource: string of the resource
             to search like 'category', 'products'
         :param options: optional dict of parameters to filter the search
-            (one or more of 'filter', 'display', 'sort', 'limit', 'schema')
+            (one or more of 'filter', 'display', 'sort', 'limit', 'page')
         :return: the response as a dict
         """
         return self.get(resource, options=options)
 
-    def get(self, resource, resource_id=None, options={}):
+    def get(self, resource, resource_id=None, options=None):
         """Retrieve (GET) a resource.
 
         :param resource: type of resource to retrieve
         :param resource_id: optional resource id to retrieve
         :param kwargs: Optional dict of parameters (one or more of
-                        'filter', 'display', 'sort', 'limit', 'schema')
+                        'filter', 'display', 'sort', 'limit', 'page')
         :return: the response as a dict
         """
         if options is not None:
@@ -408,7 +420,7 @@ class PosWebservice(object, metaclass=ClientMeta):
         :param resource: type of resource to retrieve
         :param resource_id: optional resource id to retrieve
         :param options: optional dict of parameters
-            (one or more of 'filter', 'display', 'sort', 'limit', 'schema')
+            (one or more of 'filter', 'display', 'sort', 'limit', 'page')
         :return: the header of the response as a dict
         """
         if options is not None:
@@ -479,7 +491,7 @@ class PosWebservice(object, metaclass=ClientMeta):
 class PosWebServiceDict(PosWebservice):
     """Interacts with the Pos WebService API, use dict for messages."""
 
-    def search(self, resource, **options):
+    def search(self, resource, options=None):
         """Retrieve (GET) a resource and return a list of its ids.
 
         Is not supposed to be called with an id
@@ -489,14 +501,18 @@ class PosWebServiceDict(PosWebservice):
         :param resource: string of the resource to search like,
             ie: 'addresses', 'products', 'manufacturers', etc.
         :param kwargs: optional dict of parameters to filter the search
-            (one or more of 'filter', 'display', 'sort', 'limit', 'schema')
+            (one or more of 'filter', 'display', 'sort', 'limit', 'page')
         :return: list of ids as int/string
         """
         def _parse_php_unique_id(unique_id):
             return str(unique_id)
 
-        response = super(PosWebServiceDict, self).search(resource, options=options)
-        data = response.get('data', [])
+        response = super(PosWebServiceDict, self).search(resource, options)
+        data = response
+        
+        if isinstance(response, dict):
+            data = response.get('data', [])
+
         ids = []
 
         for item in data:
@@ -520,7 +536,7 @@ class PosWebServiceDict(PosWebservice):
         :param fields: dict of fields of the resource to create
         :return: response of the server
         """
-        blank_envelope = self.get(resource, options={'schema': 'blank'})
+        blank_envelope = self.get(resource, options={'page': 'blank'})
         complete_content = dict(blank_envelope, **fields)
         return self.add(resource=resource, options=complete_content)
     
