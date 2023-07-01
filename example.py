@@ -17,7 +17,7 @@ def main():
 
     pprint("=========================================")
 
-    # Usecase 2: using traditional
+    # Usecase 2: using registed modules
     pprint(client.user.list())
 
 if __name__ == "__main__":
