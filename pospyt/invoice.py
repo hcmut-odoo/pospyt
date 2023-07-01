@@ -5,39 +5,39 @@ class Invoice(BaseModule):
     def create(self, invoice_data):
         """
         Use this call to add an invoice.
-        :param kwargs:
+        :param invoice_data:
         :return:
         """
         return self.client._execute("invoice/create", "POST", invoice_data)
     
-    def read(self, **kwargs):
+    def read(self, options=None):
         """
         Use this call to read an invoice.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("invoice/read", "GET", kwargs)
+        return self.client._execute("invoice/read", "GET", options)
     
-    def delete(self, **kwargs):
+    def delete(self, options=None):
         """
         Use this call to delete an invoice.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("invoice/delete", "POST", kwargs)
+        return self.client._execute("invoice/delete", "POST", options)
 
-    def update(self, **kwargs):
+    def update(self, options=None):
         """
         Use this call to delete an invoice.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("invoice/update", "PUT", kwargs)
+        return self.client._execute("invoice/update", "PUT", options)
     
-    def list(self, **kwargs):
+    def list(self, options=None):
         """
         Use this call to get a list of categories.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("invoice/list", "GET", kwargs)
+        return self.client._execute("invoice/list", "GET", options)

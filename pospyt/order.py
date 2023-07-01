@@ -5,39 +5,39 @@ class Order(BaseModule):
     def create(self, order_data):
         """
         Use this call to add an order.
-        :param kwargs:
+        :param order_data:
         :return:
         """
         return self.client._execute("order/create", "POST", order_data)
     
-    def read(self, **kwargs):
+    def read(self, options=None):
         """
         Use this call to read an order.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("order/read", "GET", kwargs)
+        return self.client._execute("order/read", "GET", options)
     
-    def delete(self, **kwargs):
+    def delete(self, options=None):
         """
         Use this call to delete an order.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("order/delete", "POST", kwargs)
+        return self.client._execute("order/delete", "POST", options)
 
-    def update(self, **kwargs):
+    def update(self, options=None):
         """
         Use this call to delete an order.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("order/update", "PUT", kwargs)
+        return self.client._execute("order/update", "PUT", options)
     
-    def list(self, **kwargs):
+    def list(self, options=None):
         """
         Use this call to get a list of product categories.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("order/list", "GET", kwargs)
+        return self.client._execute("order/list", "GET", options)

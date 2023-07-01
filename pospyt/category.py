@@ -5,39 +5,39 @@ class Category(BaseModule):
     def create(self, category_data):
         """
         Use this call to add a product category.
-        :param kwargs:
+        :param category_data:
         :return:
         """
         return self.client._execute("category/create", "POST", category_data)
     
-    def read(self, **kwargs):
+    def read(self, options=None):
         """
         Use this call to read a product category.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("category/read", "GET", kwargs)
+        return self.client._execute("category/read", "GET", options)
     
-    def delete(self, **kwargs):
+    def delete(self, options=None):
         """
         Use this call to delete a product category.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("category/delete", "POST", kwargs)
+        return self.client._execute("category/delete", "POST", options)
 
-    def update(self, **kwargs):
+    def update(self, options=None):
         """
         Use this call to delete a product category.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("category/update", "PUT", kwargs)
+        return self.client._execute("category/update", "PUT", options)
     
-    def list(self, **kwargs):
+    def list(self, options=None):
         """
         Use this call to get a list of product categories.
-        :param kwargs:
+        :param options:
         :return:
         """
-        return self.client._execute("category/list", "GET", kwargs)
+        return self.client._execute("category/list", "GET", options)
