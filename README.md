@@ -30,7 +30,7 @@ git clone https://github.com/hcmut-odoo/pospyt
 Quick Start
 -----------
 
-#### Import wrapper & get list of users
+#### Import wrapper & get list of products
 ```python
 import wrapper
 from pprint import pprint
