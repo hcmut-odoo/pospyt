@@ -43,6 +43,7 @@ def main():
 
     # Usecase 2: using registed modules
     pprint(client.product.list(options=options))
+    
     # Result
     # [
     #     {
