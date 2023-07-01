@@ -35,24 +35,67 @@ Quick Start
 import wrapper
 from pprint import pprint
 
-# Using PosWebservice with registed modules
-client = wrapper.PosWebservice( BASE_URL, API_KEY )
+# Options to query data
+filters = {
+    'price': {'operator': 'lt', 'value': 40000}
+}
 
-# Get list of products by price, number of records perpage, page
-resp = client.product.lits(per_page=10,page=1)
-pprint(resp)
+display = ['name', 'price', 'updated_at']
+sort = {'price': 'asc'}
+date = {
+    'start': '2021-10-20', 
+    'end': '2021-11-20'
+}
 
-# =================================================
-
-# Using arguments to compatible with the Odoo connector
-service = pospyt.PosWebServiceDict(BASE_URL, API_KEY)
-
-# Result of this way always return a dict or a list
-# Ids is a list of ids of user from pos website has type int/string 
-ids = pos.search('user/list')
-pprint(ids)
-
+options = {
+    'filter':filters,
+    'display': display,
+    'sort': sort,
+    'limit': 2,
+    'date': date
+}
 ```
+1. In case using registed modules
+    ```python
+    # Get list of products by using registed modules
+    resp = client.product.lits(options=options)
+    pprint(resp)
+    ```
+
+    `id` is the default selected field in case we use `display` options.
+    The result will be:
+    ```python
+    [
+        {
+            'id': 23,
+            'name': 'Cà Phê Đen Đá',
+            'price': '32000.00',
+            'updated_at': '2021-11-11T15:09:29.000000Z'
+        },
+        {
+            'id': 25,
+            'name': 'Cà Phê Sữa Đá',
+            'price': '32000.00',
+            'updated_at': '2021-11-11T15:09:29.000000Z'
+        }
+    ]
+    ```
+
+----
+
+2. Using arguments to compatible with the Odoo connector
+    ```python
+    service = pospyt.PosWebServiceDict(BASE_URL, API_KEY)
+
+    # Result of this way always return a dict or a list
+    # Ids is a list of ids of user from pos website has type int/string 
+    ids = pos.search('product/list', options=options)
+    pprint(ids)
+    ```
+    In search method, list of ids is default result:
+    ```python
+    [25, 26]
+    ```
 
 Advance parameters you must want to know
 --------
