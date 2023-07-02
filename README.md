@@ -32,7 +32,7 @@ Quick Start
 
 #### Import wrapper & get list of products
 ```python
-import wrapper
+import pospyt
 from pprint import pprint
 
 # Options to query data
@@ -118,7 +118,7 @@ You can pass resource as argument instead of using registed modules. This way pr
 
 Example:
 ```python
-import wrapper
+import pospyt
 from pprint import pprint
 
 service = pospyt.PosWebServiceDict(BASE_URL, API_KEY)
