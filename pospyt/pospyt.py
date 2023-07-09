@@ -130,7 +130,7 @@ class PosWebservice(object, metaclass=ClientMeta):
         
         if headers is not None:
             headers.update(authenticate_headers)
-
+        
         request = Request(method, url, headers=headers)
 
         if data:
@@ -267,7 +267,7 @@ class PosWebservice(object, metaclass=ClientMeta):
         :return: True if valid, else raise an error PrestaShopWebServiceError
 
         Official ref:
-        http://doc.prestashop.com/display/PS14/
+        https://github.com/hcmut-odoo/pospyt
         """
 
         if not isinstance(options, dict):
@@ -307,12 +307,12 @@ class PosWebservice(object, metaclass=ClientMeta):
         """
         parameter = self._make_default_parameter()
 
-        if data is None:
+        method_with_default_options = ["GET", "HEAD"]
+        if data is None and method in method_with_default_options:
             data = self._make_default_option()
 
-        if data.get("timeout"):
-            timeout = data.get("timeout")
-            data.pop("timeout")
+        if data is not None:
+            timeout = data.get("timeout", 10)
         else:
             timeout = 10
 
@@ -486,7 +486,16 @@ class PosWebservice(object, metaclass=ClientMeta):
         else:
             body = {'id': [resource_ids]}
 
-        return self._execute(url=resource, method='DELETE', data=body)
+        return self._execute(uri=resource, method='DELETE', data=body)
+
+    def connect(self, resource):
+        """Check (POST) a connection.
+
+        :param resource: path of resource to check
+        :return: True if check is done,
+            raise an error PosWebServiceError if missed
+        """
+        return self._execute(uri=resource, method='POST')
 
 class PosWebServiceDict(PosWebservice):
     """Interacts with the Pos WebService API, use dict for messages."""
