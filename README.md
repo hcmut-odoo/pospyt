@@ -89,7 +89,7 @@ options = {
 
     # Result of this way always return a dict or a list
     # Ids is a list of ids of user from pos website has type int/string 
-    ids = pos.search('product/list', options=options)
+    ids = service.search('product/list', options=options)
     pprint(ids)
     ```
     In search method, list of ids is default result:
