@@ -122,7 +122,13 @@ class PosWebservice(object, metaclass=ClientMeta):
 
     def _build_request(self, uri, method, headers, data):
         method = method.upper()
-        url = self._base_url + "/" + uri
+        url = ""
+        base_url = self._base_url
+ 
+        if base_url.endswith('/'):
+            url = base_url + uri
+        else:
+            url = base_url + '/' + uri
         
         authenticate_headers = {
             "X-API-Key": self._api_key
