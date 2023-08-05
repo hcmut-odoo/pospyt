@@ -418,7 +418,7 @@ class PosWebservice(object, metaclass=ClientMeta):
             self._validate_query_options(options)
         if resource_id is not None:
             options.update({'resource_id': resource_id})
-        return self._execute(uri=resource, method='GET', data=options)
+        return self._execute(uri=f"{resource}/find/{resource_id}", method='GET', data=options)
     
     def head(self, resource, resource_id=None, options={}):
         """Head method (HEAD) a resource.
