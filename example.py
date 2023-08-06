@@ -30,12 +30,13 @@ def main():
         'display': display,
         'sort': sort,
         'limit': 2,
-        'date': date
+        'date': date,
+        'action': 'list'
     }
 
     # Search method only return list of ids
-    pprint(pos.search('product/list', options=options))
-
+    pprint(pos.search('product', options=options))
+    pprint(pos.search('product', options={'action': 'list', 'limit': 10, 'page': 3}))
     # Result
     # [23, 25]
 
