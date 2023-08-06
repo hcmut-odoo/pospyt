@@ -5,7 +5,8 @@ from http.client import HTTPConnection
 from urllib.parse import urlencode
 import mimetypes
 from bs4 import BeautifulSoup
-import datetime
+from datetime import datetime
+from .ultil import convert_to_valid_format
 
 from .store import Store
 from .user import User
@@ -144,6 +145,22 @@ class PosWebservice(object, metaclass=ClientMeta):
         request = Request(method, url, headers=headers)
 
         if data:
+            # Convert 'start/end' from datetime object to ISO 8601 string if not None
+            if 'date' in data and isinstance(data['date'], dict):                
+                if data['date'].get('start') is not None:
+                    start = data['date']['start']
+                    if isinstance(data['date']['start'], datetime):
+                        data['date']['start'] = convert_to_valid_format(start)
+                    else:
+                        raise PosWebServiceError("start value in date dictionary must be datetime")
+                
+                if data['date'].get('end') is not None:
+                    end = data['date']['end']
+                    if isinstance(end, datetime):
+                        data['date']['end'] = convert_to_valid_format(end)
+                    else:
+                        raise PosWebServiceError("end value in date dictionary must be datetime")
+
             if request.method in ["POST", "PUT", "PATCH"]:
                 request.json = data
             elif isinstance(data, dict):
@@ -561,6 +578,11 @@ class PosWebServiceDict(PosWebservice):
         
         if isinstance(response, dict):
             data = response.get('data', [])
+            success = response.get('success', False)
+            message = response.get('message', 'No message')
+
+            if not success:
+                raise PosWebServiceError(f"{message}: {data}") 
 
         ids = []
 
