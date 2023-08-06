@@ -306,7 +306,7 @@ class PosWebservice(object, metaclass=ClientMeta):
                 'page': 1
             }
 
-    def _execute(self, uri, method, action, data=None, add_headers=None):
+    def _execute(self, uri, method, action=None, data=None, add_headers=None):
         """Execute a request on the PrestaShop Webservice.
 
         :param url: full URL to call
