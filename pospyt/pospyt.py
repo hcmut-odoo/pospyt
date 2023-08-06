@@ -5,6 +5,7 @@ from http.client import HTTPConnection
 from urllib.parse import urlencode
 import mimetypes
 from bs4 import BeautifulSoup
+import datetime
 
 from .store import Store
 from .user import User
@@ -285,7 +286,7 @@ class PosWebservice(object, metaclass=ClientMeta):
                 'Parameters must be a instance of dict'
             )
         supported = (
-            'filter', 'display', 'sort', 'date', 'limit', 'page', 'action'
+            'filter', 'display', 'sort', 'date', 'limit', 'page', 'action', 'id'
         )
 
         unsupported = set([
