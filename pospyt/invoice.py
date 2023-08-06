@@ -8,7 +8,7 @@ class Invoice(BaseModule):
         :param invoice_data:
         :return:
         """
-        return self.client._execute("invoice/create", "POST", invoice_data)
+        return self.client._execute("invoice", "create", "POST", invoice_data)
     
     def read(self, options=None):
         """
@@ -16,7 +16,7 @@ class Invoice(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("invoice/read", "GET", options)
+        return self.client._execute("invoice", "read", "GET", options)
     
     def delete(self, options=None):
         """
@@ -24,7 +24,7 @@ class Invoice(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("invoice/delete", "POST", options)
+        return self.client._execute("invoice", "delete", "POST", options)
 
     def update(self, options=None):
         """
@@ -32,7 +32,7 @@ class Invoice(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("invoice/update", "PUT", options)
+        return self.client._execute("invoice", "update", "PUT", options)
     
     def list(self, options=None):
         """
@@ -40,4 +40,4 @@ class Invoice(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("invoice/list", "GET", options)
+        return self.client._execute("invoice", "list", "GET", options)
