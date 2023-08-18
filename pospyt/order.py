@@ -8,7 +8,7 @@ class Order(BaseModule):
         :param order_data:
         :return:
         """
-        return self.client._execute("order/create", "POST", order_data)
+        return self.client._execute("order", "POST", "create", order_data)
     
     def read(self, options=None):
         """
@@ -16,7 +16,7 @@ class Order(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("order/read", "GET", options)
+        return self.client._execute("order", "GET", "read", options)
     
     def delete(self, options=None):
         """
@@ -24,7 +24,7 @@ class Order(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("order/delete", "POST", options)
+        return self.client._execute("order", "POST", "delete", options)
 
     def update(self, options=None):
         """
@@ -32,7 +32,7 @@ class Order(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("order/update", "PUT", options)
+        return self.client._execute("order", "PUT", "update", options)
     
     def list(self, options=None):
         """
@@ -40,4 +40,4 @@ class Order(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("order/list", "GET", options)
+        return self.client._execute("order", "GET", "list", options)

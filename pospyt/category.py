@@ -8,7 +8,7 @@ class Category(BaseModule):
         :param category_data:
         :return:
         """
-        return self.client._execute("category/create", "POST", category_data)
+        return self.client._execute("category", "create", "POST", category_data)
     
     def read(self, options=None):
         """
@@ -16,7 +16,7 @@ class Category(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("category/read", "GET", options)
+        return self.client._execute("category", "read", "GET", options)
     
     def delete(self, options=None):
         """
@@ -24,7 +24,7 @@ class Category(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("category/delete", "POST", options)
+        return self.client._execute("category", "delete", "POST", options)
 
     def update(self, options=None):
         """
@@ -32,7 +32,7 @@ class Category(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("category/update", "PUT", options)
+        return self.client._execute("category", "update", "PUT", options)
     
     def list(self, options=None):
         """
@@ -40,4 +40,4 @@ class Category(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("category/list", "GET", options)
+        return self.client._execute("category", "list", "GET", options)

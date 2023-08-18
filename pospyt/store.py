@@ -8,7 +8,7 @@ class Store(BaseModule):
         :param store_data:
         :return:
         """
-        return self.client._execute("store/create", "POST", store_data)
+        return self.client._execute("store", "POST", "create", store_data)
     
     def read(self, options):
         """
@@ -16,7 +16,7 @@ class Store(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("store/read", "GET", options)
+        return self.client._execute("store", "GET", "read", options)
     
     def delete(self, options):
         """
@@ -24,7 +24,7 @@ class Store(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("store/delete", "POST", options)
+        return self.client._execute("store", "POST", "delete", options)
 
     def update(self, options):
         """
@@ -32,7 +32,7 @@ class Store(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("store/update", "PUT", options)
+        return self.client._execute("store", "PUT", "update", options)
     
     def list(self, options):
         """
@@ -40,4 +40,4 @@ class Store(BaseModule):
         :param options:
         :return:
         """
-        return self.client._execute("store/list", "GET", options)
+        return self.client._execute("store", "GET", "list", options)

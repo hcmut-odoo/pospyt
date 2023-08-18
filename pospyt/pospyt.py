@@ -5,6 +5,8 @@ from http.client import HTTPConnection
 from urllib.parse import urlencode
 import mimetypes
 from bs4 import BeautifulSoup
+from datetime import datetime
+from .ultil import convert_to_valid_format
 
 from .store import Store
 from .user import User
@@ -120,7 +122,7 @@ class PosWebservice(object, metaclass=ClientMeta):
             "timestamp": self._make_timestamp()
         }
 
-    def _build_request(self, uri, method, headers, data):
+    def _build_request(self, uri, method, action, headers, data):
         method = method.upper()
         url = ""
         base_url = self._base_url
@@ -129,6 +131,9 @@ class PosWebservice(object, metaclass=ClientMeta):
             url = base_url + uri
         else:
             url = base_url + '/' + uri
+        
+        if action is not None:
+            url = f"{url}/{action}"
         
         authenticate_headers = {
             "X-API-Key": self._api_key
@@ -140,6 +145,22 @@ class PosWebservice(object, metaclass=ClientMeta):
         request = Request(method, url, headers=headers)
 
         if data:
+            # Convert 'start/end' from datetime object to ISO 8601 string if not None
+            if 'date' in data and isinstance(data['date'], dict):                
+                if data['date'].get('start') is not None:
+                    start = data['date']['start']
+                    if isinstance(data['date']['start'], datetime):
+                        data['date']['start'] = convert_to_valid_format(start)
+                    else:
+                        raise PosWebServiceError("start value in date dictionary must be datetime")
+                
+                if data['date'].get('end') is not None:
+                    end = data['date']['end']
+                    if isinstance(end, datetime):
+                        data['date']['end'] = convert_to_valid_format(end)
+                    else:
+                        raise PosWebServiceError("end value in date dictionary must be datetime")
+
             if request.method in ["POST", "PUT", "PATCH"]:
                 request.json = data
             elif isinstance(data, dict):
@@ -147,6 +168,7 @@ class PosWebservice(object, metaclass=ClientMeta):
             else:
                 request.params = data
         
+        print(request.params)
         return request
 
     def _get_cached_module(self, key):
@@ -281,7 +303,7 @@ class PosWebservice(object, metaclass=ClientMeta):
                 'Parameters must be a instance of dict'
             )
         supported = (
-            'filter', 'display', 'sort', 'date', 'limit', 'page'
+            'filter', 'display', 'sort', 'date', 'limit', 'page', 'action', 'id'
         )
 
         unsupported = set([
@@ -301,7 +323,7 @@ class PosWebservice(object, metaclass=ClientMeta):
                 'page': 1
             }
 
-    def _execute(self, uri, method, data=None, add_headers=None):
+    def _execute(self, uri, method, action=None, data=None, add_headers=None):
         """Execute a request on the PrestaShop Webservice.
 
         :param url: full URL to call
@@ -336,6 +358,7 @@ class PosWebservice(object, metaclass=ClientMeta):
         request = self._build_request(
             uri,
             method,
+            action,
             headers=request_headers,
             data=data
         )
@@ -417,8 +440,15 @@ class PosWebservice(object, metaclass=ClientMeta):
         if options is not None:
             self._validate_query_options(options)
         if resource_id is not None:
-            options.update({'resource_id': resource_id})
-        return self._execute(uri=f"{resource}/find/{resource_id}", method='GET', data=options)
+            options.update({'id': resource_id})
+        if options.get('action') is not None:
+            action = options.get('action')
+        else:
+            raise PosWebServiceError(
+                f"Options of GET {resource} must have a specific action"
+            )
+
+        return self._execute(uri=resource, method='GET', action=action, data=options)
     
     def head(self, resource, resource_id=None, options={}):
         """Head method (HEAD) a resource.
@@ -432,8 +462,15 @@ class PosWebservice(object, metaclass=ClientMeta):
         if options is not None:
             self._validate_query_options(options)
         if resource_id is not None:
-            options.update({'resource_id': resource_id})
-        return self._execute(uri=resource, method='HEAD', data=options)
+            options.update({'id': resource_id})
+        if options.get('action') is not None:
+            action = options.get('action')
+        else:
+            raise PosWebServiceError(
+                f"Options of HEAD {resource} must have a specific action"
+            )
+        
+        return self._execute(uri=resource, method='HEAD', action=action, data=options)
     
     def add(self, resource, files=None, options={}):
         """Add (POST) a resource. Content can be a dict of values to create.
@@ -448,6 +485,13 @@ class PosWebservice(object, metaclass=ClientMeta):
         if options is not None:
             self._validate_query_options(options)
 
+        if options.get('action') is not None:
+                action = options.get('action')
+        else:
+            raise PosWebServiceError(
+                f"Options of POST {resource} must have a specific action"
+            )
+
         if files is not None:
             multipart_data = []
             for file_data in files:
@@ -456,11 +500,11 @@ class PosWebservice(object, metaclass=ClientMeta):
 
             if options is not None:
                 multipart_data.append(('data', json.dumps(options)))
-
-            return self._execute(url=resource, method='POST', data=multipart_data)
+            
+            return self._execute(url=resource, method='POST', action=action, data=multipart_data)
 
         elif options is not None:
-            return self._execute(url=resource, method='POST', data=options)
+            return self._execute(url=resource, method='POST', action=action, data=options)
 
         else:
             raise PosWebServiceError('Undefined data.')
@@ -477,7 +521,14 @@ class PosWebservice(object, metaclass=ClientMeta):
             self._validate_query_options(options)
         if content is not None:
             options.update(content)
-        return self._execute(uri=resource, method='PUT', data=options)
+        if options.get('action') is not None:
+                action = options.get('action')
+        else:
+            raise PosWebServiceError(
+                f"Options of UPDATE {resource} must have a specific action"
+            )
+        
+        return self._execute(uri=resource, method='POST', action=action, data=options)
     
     def delete(self, resource, resource_ids):
         """Delete (DELETE) a resource.
@@ -492,7 +543,7 @@ class PosWebservice(object, metaclass=ClientMeta):
         else:
             body = {'id': [resource_ids]}
 
-        return self._execute(uri=resource, method='DELETE', data=body)
+        return self._execute(uri=resource, method='DELETE', action='delete', data=body)
 
     def connect(self, resource):
         """Check (POST) a connection.
@@ -527,6 +578,11 @@ class PosWebServiceDict(PosWebservice):
         
         if isinstance(response, dict):
             data = response.get('data', [])
+            success = response.get('success', False)
+            message = response.get('message', 'No message')
+
+            if not success:
+                raise PosWebServiceError(f"{message}: {data}") 
 
         ids = []
 
