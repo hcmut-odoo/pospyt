@@ -1,3 +1,4 @@
+import copy
 import time
 import json
 from requests import Request, Session, exceptions
@@ -6,8 +7,8 @@ from urllib.parse import urlencode
 import mimetypes
 from bs4 import BeautifulSoup
 from datetime import datetime
-from .ultil import convert_to_valid_format
 
+from .ultil import convert_to_valid_format
 from .store import Store
 from .user import User
 from .product import Product
@@ -144,31 +145,33 @@ class PosWebservice(object, metaclass=ClientMeta):
         
         request = Request(method, url, headers=headers)
 
+        # Convert 'start/end' from datetime object to ISO 8601 string if not None
         if data:
-            # Convert 'start/end' from datetime object to ISO 8601 string if not None
-            if 'date' in data and isinstance(data['date'], dict):                
-                if data['date'].get('start') is not None:
-                    start = data['date']['start']
-                    if isinstance(data['date']['start'], datetime):
-                        data['date']['start'] = convert_to_valid_format(start)
+            # Deep copy ensures that not change original data
+            request_data = copy.deepcopy(data)
+
+            if 'date' in request_data and isinstance(request_data['date'], dict):                
+                if request_data['date'].get('start') is not None:
+                    start = request_data['date']['start']
+                    if isinstance(request_data['date']['start'], datetime):
+                        request_data['date']['start'] = convert_to_valid_format(start)
                     else:
                         raise PosWebServiceError("start value in date dictionary must be datetime")
                 
-                if data['date'].get('end') is not None:
-                    end = data['date']['end']
+                if request_data['date'].get('end') is not None:
+                    end = request_data['date']['end']
                     if isinstance(end, datetime):
-                        data['date']['end'] = convert_to_valid_format(end)
+                        request_data['date']['end'] = convert_to_valid_format(end)
                     else:
                         raise PosWebServiceError("end value in date dictionary must be datetime")
 
             if request.method in ["POST", "PUT", "PATCH"]:
-                request.json = data
-            elif isinstance(data, dict):
-                request.json = data
+                request.json = request_data
+            elif isinstance(request_data, dict):
+                request.json = request_data
             else:
-                request.params = data
-        
-        print(request.params)
+                request.params = request_data
+
         return request
 
     def _get_cached_module(self, key):
@@ -306,6 +309,8 @@ class PosWebservice(object, metaclass=ClientMeta):
             'filter', 'display', 'sort', 'date', 'limit', 'page', 'action', 'id'
         )
 
+        print(options)
+
         unsupported = set([
             param.split('[')[0]
             for param in options
@@ -333,7 +338,6 @@ class PosWebservice(object, metaclass=ClientMeta):
         :param add_headers: additional headers merged onto instance's headers.
         :return: tuple with (status code, header, content) of the response.
         """
-        parameter = self._make_default_parameter()
 
         method_with_default_options = ["GET", "HEAD"]
         if data is None and method in method_with_default_options:
@@ -344,8 +348,6 @@ class PosWebservice(object, metaclass=ClientMeta):
         else:
             timeout = 10
 
-        if data is not None:
-            data.update(parameter)
         if self.debug:
             data.update({'debug': True})
 
@@ -567,11 +569,23 @@ class PosWebServiceDict(PosWebservice):
         :param resource: string of the resource to search like,
             ie: 'addresses', 'products', 'manufacturers', etc.
         :param kwargs: optional dict of parameters to filter the search
-            (one or more of 'filter', 'display', 'sort', 'limit', 'page')
+            (one or more of 'filter', 'sort', 'limit', 'page')
         :return: list of ids as int/string
         """
         def _parse_php_unique_id(unique_id):
             return str(unique_id)
+
+        # Check if action is none, and set action is search
+        if not options.get('action') or options.get('action') is None:
+            options['action'] = 'search'
+        elif len(options) == 0 or options == {}:
+            options['action'] = 'search'
+
+        if options is None:
+            options = {}
+
+        if options.get('action') is None:
+            options.update({ 'action': 'search' })
 
         response = super(PosWebServiceDict, self).search(resource, options)
         data = response
@@ -596,6 +610,73 @@ class PosWebServiceDict(PosWebservice):
             ids.append(id_value)
 
         return ids
+
+    def list(self, resource, options=None):
+        """Retrieve (GET) a resource and return a list of its data.
+
+        Is not supposed to be called with an id
+        or whatever in the resource line 'addresses/1'
+        But only with 'addresses' or 'products' etc...
+
+        :param resource: string of the resource to search like,
+            ie: 'addresses', 'products', 'manufacturers', etc.
+        :param kwargs: optional dict of parameters to filter the search
+            (one or more of 'filter', 'display', 'sort', 'limit', 'page')
+        :return: list of data as dictionary
+        """
+
+        # Check if action is none, and set action is list
+        if options is None:
+            options = {}
+
+        if options.get('action') is None:
+            options.update({ 'action': 'list' })
+
+        response = super(PosWebServiceDict, self).search(resource, options)
+        data = response
+        
+        if isinstance(response, dict):
+            data = response.get('data', [])
+            success = response.get('success', False)
+            message = response.get('message', 'No message')
+
+            if not success:
+                raise PosWebServiceError(f"{message}: {data}") 
+
+        return data
+    
+    def find(self, resource, resource_id, options=None):
+        """Retrieve (GET) a resource and return a list of its data.
+
+        Is not supposed to be called with an id
+        or whatever in the resource line 'addresses/1'
+        But only with 'addresses' or 'products' etc...
+
+        :param resource: string of the resource to search like,
+            ie: 'addresses', 'products', 'manufacturers', etc.
+        :return: get of data as dictionary
+        """
+
+        # Check if action is none, and set action is find
+
+        if options is None:
+            options = {}
+
+        if options.get('action') is None:
+            options.update({ 'action': 'find' })
+
+        response = super(PosWebServiceDict, self).get(resource=resource, resource_id=resource_id, options=options)
+        data = response
+        
+        if isinstance(response, dict):
+            data = response.get('data', [])
+            success = response.get('success', False)
+            message = response.get('message', 'No message')
+
+            if not success:
+                raise PosWebServiceError(f"{message}: {data}") 
+
+        return data
 
     def partial_add(self, resource, fields):
         """Add (POST) a resource without necessary all the content.

@@ -1,5 +1,6 @@
 import pospyt
 from pprint import pprint
+from datetime import datetime
 
 API_KEY = ""
 BASE_URL = "http://localhost:8000/api"
@@ -25,6 +26,13 @@ def main():
         'end': '2021-11-20'
     }
 
+    date_format = '%Y-%m-%d'
+
+    date = {
+        'start': datetime.strptime('2021-10-20', date_format),
+        'end': datetime.strptime('2021-11-20', date_format)
+    }
+
     options = {
         'filter':filters,
         'display': display,
@@ -36,9 +44,12 @@ def main():
 
     # Search method only return list of ids
     pprint(pos.search('product', options=options))
-    pprint(pos.search('product', options={'action': 'list', 'limit': 10, 'page': 3}))
-    # Result
-    # [23, 25]
+
+    # List method return list of data
+    pprint(pos.list('product', options=options))
+
+    # Find method return data of an reousrce id
+    pprint(pos.find('product', 1))
 
     pprint("=========================================")
 
