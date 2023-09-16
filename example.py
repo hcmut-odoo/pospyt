@@ -42,6 +42,8 @@ def main():
         'action': 'list'
     }
 
+    # GET METHOD
+    # ==========================================================
     # Search method only return list of ids
     pprint(pos.search('product', options=options))
 
@@ -71,6 +73,17 @@ def main():
     #         'updated_at': '2021-11-11T15:09:29.000000Z'
     #     }
     # ]
+    # ==========================================================
+
+    # POST METHOD
+    # ==========================================================
+    update_order_options = {
+        'action': 'reject',
+        'id': 4
+    }
+
+    pprint(pos.add('order', options=update_order_options))
+    # ==========================================================
 
 if __name__ == "__main__":
     main()
