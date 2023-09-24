@@ -40,5 +40,4 @@ class Product(BaseModule):
         :param options:
         :return:
         """
-        print(options)
         return self.client._execute("product", "GET", "list", options)

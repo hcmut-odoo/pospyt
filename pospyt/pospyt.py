@@ -309,8 +309,6 @@ class PosWebservice(object, metaclass=ClientMeta):
             'filter', 'display', 'sort', 'date', 'limit', 'page', 'action', 'id'
         )
 
-        print(options)
-
         unsupported = set([
             param.split('[')[0]
             for param in options
