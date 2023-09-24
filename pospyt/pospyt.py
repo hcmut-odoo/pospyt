@@ -487,6 +487,7 @@ class PosWebservice(object, metaclass=ClientMeta):
 
         if options.get('action') is not None:
                 action = options.get('action')
+                options.pop('action')
         else:
             raise PosWebServiceError(
                 f"Options of POST {resource} must have a specific action"
@@ -501,10 +502,10 @@ class PosWebservice(object, metaclass=ClientMeta):
             if options is not None:
                 multipart_data.append(('data', json.dumps(options)))
             
-            return self._execute(url=resource, method='POST', action=action, data=multipart_data)
+            return self._execute(uri=resource, method='POST', action=action, data=multipart_data)
 
         elif options is not None:
-            return self._execute(url=resource, method='POST', action=action, data=options)
+            return self._execute(uri=resource, method='POST', action=action, data=options)
 
         else:
             raise PosWebServiceError('Undefined data.')
