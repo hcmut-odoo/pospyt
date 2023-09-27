@@ -523,11 +523,9 @@ class PosWebservice(object, metaclass=ClientMeta):
         if content is not None:
             options.update(content)
         if options.get('action') is not None:
-                action = options.get('action')
+            action = options.get('action')
         else:
-            raise PosWebServiceError(
-                f"Options of UPDATE {resource} must have a specific action"
-            )
+            action = 'update'
         
         return self._execute(uri=resource, method='POST', action=action, data=options)
     
