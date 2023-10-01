@@ -306,7 +306,8 @@ class PosWebservice(object, metaclass=ClientMeta):
                 'Parameters must be a instance of dict'
             )
         supported = (
-            'filter', 'display', 'sort', 'date', 'limit', 'page', 'action', 'id'
+            'filter', 'display', 'sort', 'date', 'limit', 'page', 
+            'action', 'id', 'variant_barcode', 'barcode'
         )
 
         unsupported = set([
