@@ -83,8 +83,12 @@ def main():
     }
 
     pprint(pos.add('order', options=update_order_options))
-    # ==========================================================
 
+    # ==========================================================
+    # EDIT
+    update_variant_options = { 'stock_qty': 45 }
+
+    pprint(pos.edit('product_variant', content=update_variant_options, options={'id': 4}))
 if __name__ == "__main__":
     main()
 
